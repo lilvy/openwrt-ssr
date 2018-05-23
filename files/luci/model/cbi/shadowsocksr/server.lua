@@ -7,7 +7,10 @@ local uci = luci.model.uci.cursor()
 local ipkg = require("luci.model.ipkg")
 
 
-m = Map(shadowsocksr, translate("ShadowSocksR Server"))
+m = Map(shadowsocksr, translate(""))
+
+s=m:section(TypedSection,"tabmenu",translate(""))
+s.template = "shadowsocksr/tabmenu"
 
 local encrypt_methods = {
 	"table",
@@ -66,7 +69,7 @@ sec.anonymous = true
 sec.addremove = true
 sec.sortable = true
 sec.template = "cbi/tblsection"
-sec.extedit = luci.dispatcher.build_url("admin/services/shadowsocksr/server/%s")
+sec.extedit = luci.dispatcher.build_url("admin/network/shadowsocksr/server/%s")
 function sec.create(...)
 	local sid = TypedSection.create(...)
 	if sid then

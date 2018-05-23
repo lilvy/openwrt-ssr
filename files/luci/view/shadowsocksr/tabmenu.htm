@@ -1,0 +1,33 @@
+<%-
+	local tabcount = 0;
+	local tabname = {};
+	local tabmenu = {};
+
+	tabcount = tabcount+1
+	tabname[tabcount] = translate("Client")
+	tabmenu[tabcount] = luci.dispatcher.build_nodeurl("admin", "network", "shadowsocksr")
+	
+	tabcount = tabcount+1
+	tabname[tabcount] = translate("Server")
+	tabmenu[tabcount] = luci.dispatcher.build_nodeurl("admin", "network", "shadowsocksr", "server")
+
+	tabcount = tabcount+1
+	tabname[tabcount] = translate("Status")
+	tabmenu[tabcount] = luci.dispatcher.build_nodeurl("admin", "network", "shadowsocksr", "status")
+-%>
+
+<fieldset class="xtabstyle" style="margin-bottom: 30px;">
+	<ul class="cbi-xtabmenu">
+	<% for i=1, tabcount do %>
+	        <% if REQUEST_URI  .. "/" == tabmenu[i] or REQUEST_URI .. "/" ..tabname[1] == tabmenu[i] then %>
+	        <li id="tab1.network.xtab.<%=tabname[i]%>" class="cbi-xtab" name="<%=REQUEST_URI%>"><a href="<%=tabmenu[i]%>"><span><%=tabname[i]%></span></a></li>
+	        <%elseif REQUEST_URI  .. "/" == tabmenu_alias_net and tabname[i] == tabname[1] then%>
+			<li id="tab1.network.xtab.<%=tabname[1]%>" class="cbi-xtab" name="<%=REQUEST_URI%>"><a href="<%=tabmenu[1]%>"><span><%=tabname[1]%></span></a></li>
+			<%elseif REQUEST_URI  .. "/" == tabmenu_alias_sta and tabname[i] == tabname[1] then%>
+			<li id="tab1.network.xtab.<%=tabname[1]%>" class="cbi-xtab" name="<%=REQUEST_URI%>"><a href="<%=tabmenu[1]%>"><span><%=tabname[1]%></span></a></li>
+			<%else%>
+	        <li id="tab3.network.xtab.<%=tabname[i]%>" class="cbi-xtab-disabled" name="<%=REQUEST_URI%>"><a href="<%=tabmenu[i]%>"><span><%=tabname[i]%></span></a></li>
+	        <%end%>
+	<%end%>
+	</ul>
+</fieldset>

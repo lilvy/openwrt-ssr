@@ -4,32 +4,40 @@
 module("luci.controller.shadowsocksr", package.seeall)
 
 function index()
-	if not nixio.fs.access("/etc/config/shadowsocksr") then
-		return
-	end
+  if not nixio.fs.access("/etc/config/shadowsocksr") then
+    return
+  end
 
          if nixio.fs.access("/usr/bin/ssr-redir") 
          then
-         entry({"admin", "services", "shadowsocksr"},alias("admin", "services", "shadowsocksr", "client"),_("ShadowSocksR"), 10).dependent = true
-         entry({"admin", "services", "shadowsocksr", "client"},arcombine(cbi("shadowsocksr/client"), cbi("shadowsocksr/client-config")),_("SSR Client"), 10).leaf = true
+          entry({"admin", "network", "shadowsocksr"},alias("admin", "network", "shadowsocksr", "client"),_("SSR"), 35).dependent = true
+
+          page = entry({"admin", "network", "shadowsocksr", "client"},arcombine(cbi("shadowsocksr/client"), cbi("shadowsocksr/client-config")),_("SSR Client"), 10)
+          page.hidden = true
+          page.leaf = true
          elseif nixio.fs.access("/usr/bin/ssr-server") 
          then 
-         entry({"admin", "services", "shadowsocksr"},alias("admin", "services", "shadowsocksr", "server"),_("ShadowSocksR"), 10).dependent = true
+          entry({"admin", "network", "shadowsocksr"},alias("admin", "network", "shadowsocksr", "server"),_("SSR"), 35).dependent = true
          else
           return
          end  
-	
+  
 
-	if nixio.fs.access("/usr/bin/ssr-server") then
-	entry({"admin", "services", "shadowsocksr", "server"},arcombine(cbi("shadowsocksr/server"), cbi("shadowsocksr/server-config")),_("SSR Server"), 20).leaf = true
-	end
-		
+  if nixio.fs.access("/usr/bin/ssr-server") then
+    page = entry({"admin", "network", "shadowsocksr", "server"},arcombine(cbi("shadowsocksr/server"), cbi("shadowsocksr/server-config")),_("SSR Server"), 20)
+    page.hidden = true
+    page.leaf = true
+  end
+    
 
-	entry({"admin", "services", "shadowsocksr", "status"},cbi("shadowsocksr/status"),_("Status"), 30).leaf = true
-	entry({"admin", "services", "shadowsocksr", "check"}, call("check_status"))
-	entry({"admin", "services", "shadowsocksr", "refresh"}, call("refresh_data"))
-	entry({"admin", "services", "shadowsocksr", "checkport"}, call("check_port"))
-	
+  page = entry({"admin", "network", "shadowsocksr", "status"},cbi("shadowsocksr/status"),_("Status"), 30)
+  page.hidden = true
+  page.leaf = true
+
+  entry({"admin", "network", "shadowsocksr", "check"}, call("check_status"), nil)
+  entry({"admin", "network", "shadowsocksr", "refresh"}, call("refresh_data"), nil)
+  entry({"admin", "network", "shadowsocksr", "checkport"}, call("check_port"), nil)
+  
 end
 
 function check_status()
@@ -39,7 +47,7 @@ if sret== 0 then
  retstring ="0"
 else
  retstring ="1"
-end	
+end 
 luci.http.prepare_content("application/json")
 luci.http.write_json({ ret=retstring })
 end
@@ -122,7 +130,7 @@ else
  else
   retstring ="-1"
  end
-end	
+end 
 luci.http.prepare_content("application/json")
 luci.http.write_json({ ret=retstring ,retcount=icount})
 end
@@ -139,25 +147,25 @@ local iret=1
 
 uci:foreach(shadowsocksr, "servers", function(s)
 
-	if s.alias then
-		server_name=s.alias
-	elseif s.server and s.server_port then
-		server_name= "%s:%s" %{s.server, s.server_port}
-	end
-	iret=luci.sys.call(" ipset add ss_spec_wan_ac " .. s.server .. " 2>/dev/null")
-	socket = nixio.socket("inet", "stream")
-	socket:setopt("socket", "rcvtimeo", 3)
-	socket:setopt("socket", "sndtimeo", 3)
-	ret=socket:connect(s.server,s.server_port)
-	if  tostring(ret) == "true" then
-	socket:close()
-	retstring =retstring .. "<font color='green'>[" .. server_name .. "] OK.</font><br />"
-	else
-	retstring =retstring .. "<font color='red'>[" .. server_name .. "] Error.</font><br />"
-	end	
-	if  iret== 0 then
-	luci.sys.call(" ipset del ss_spec_wan_ac " .. s.server)
-	end
+  if s.alias then
+    server_name=s.alias
+  elseif s.server and s.server_port then
+    server_name= "%s:%s" %{s.server, s.server_port}
+  end
+  iret=luci.sys.call(" ipset add ss_spec_wan_ac " .. s.server .. " 2>/dev/null")
+  socket = nixio.socket("inet", "stream")
+  socket:setopt("socket", "rcvtimeo", 3)
+  socket:setopt("socket", "sndtimeo", 3)
+  ret=socket:connect(s.server,s.server_port)
+  if  tostring(ret) == "true" then
+  socket:close()
+  retstring =retstring .. "<font color='green'>[" .. server_name .. "] OK.</font><br />"
+  else
+  retstring =retstring .. "<font color='red'>[" .. server_name .. "] Error.</font><br />"
+  end 
+  if  iret== 0 then
+  luci.sys.call(" ipset del ss_spec_wan_ac " .. s.server)
+  end
 end)
 
 luci.http.prepare_content("application/json")

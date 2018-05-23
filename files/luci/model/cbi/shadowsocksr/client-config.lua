@@ -65,8 +65,8 @@ obfs = {
 	"tls1.2_ticket_auth",
 }
 
-m = Map(shadowsocksr, translate("Edit ShadowSocksR Server"))
-m.redirect = luci.dispatcher.build_url("admin/services/shadowsocksr/client")
+m = Map(shadowsocksr, translate("Edit Server"))
+m.redirect = luci.dispatcher.build_url("admin/network/shadowsocksr")
 if m.uci:get(shadowsocksr, sid) ~= "servers" then
 	luci.http.redirect(m.redirect) 
 	return

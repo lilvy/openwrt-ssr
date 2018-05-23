@@ -20,7 +20,10 @@ if nixio.fs.access("/etc/pdnsd.conf") then
 pdnsd_flag=1		
 end
 
-m = Map(shadowsocksr, translate("ShadowSocksR Client"))
+m = Map("shadowsocksr", translate(""))
+
+s=m:section(TypedSection,"tabmenu",translate("")) 
+s.template = "shadowsocksr/tabmenu"
 
 local server_table = {}
 local arp_table = luci.sys.net.arptable() or {}
@@ -86,7 +89,7 @@ sec.anonymous = true
 sec.addremove = true
 sec.sortable = true
 sec.template = "cbi/tblsection"
-sec.extedit = luci.dispatcher.build_url("admin/services/shadowsocksr/client/%s")
+sec.extedit = luci.dispatcher.build_url("admin/network/shadowsocksr/client/%s")
 function sec.create(...)
 	local sid = TypedSection.create(...)
 	if sid then
@@ -94,6 +97,8 @@ function sec.create(...)
 		return
 	end
 end
+
+sec:tab("shadowsocksr", translate("SSR Client"))
 
 o = sec:option(DummyValue, "alias", translate("Alias"))
 function o.cfgvalue(...)
@@ -253,6 +258,6 @@ o.rmempty = false
 
 o = s:taboption("lan_ac", DynamicList, "lan_ac_ips", translate("LAN Host List"))
 o.datatype = "ipaddr"
-for _, v in ipairs(arp_table) do o:value(v["IP address"]) end
+-- for _, v in ipairs(arp_table) do o:value(v["IP address"]) end
 
 return m
