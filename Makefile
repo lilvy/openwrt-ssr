@@ -71,10 +71,10 @@ if [ -z "$${IPKG_INSTROOT}" ]; then
 		delete firewall.shadowsocksr
 		commit firewall
 EOF
-if [ "$(1)" = "GFW" ] ;then
-sed -i '/conf-dir/d' /etc/dnsmasq.conf 
-/etc/init.d/dnsmasq restart 
-fi
+    if [ "$(1)" = "GFW" ] ;then
+        sed -i '/--conf-dir=\/etc\/dnsmasq.ssr/d' /etc/init.d/dnsmasq
+        /etc/init.d/dnsmasq restart
+    fi
 fi
 exit 0
 endef
@@ -106,12 +106,15 @@ if [ -z "$${IPKG_INSTROOT}" ]; then
 		set firewall.shadowsocksr.reload=0
 		commit firewall
 EOF
-fi
 
-if [ -z "$${IPKG_INSTROOT}" ]; then
 	( . /etc/uci-defaults/luci-shadowsocksr ) && rm -f /etc/uci-defaults/luci-shadowsocksr
 	chmod 755 /etc/init.d/shadowsocksr >/dev/null 2>&1
 	/etc/init.d/shadowsocksr enable >/dev/null 2>&1
+
+	if [ "$(1)" = "GFW" ] ;then
+		sed -i '/args=""/a append args "--conf-dir=/etc/dnsmasq.ssr"' /etc/init.d/dnsmasq
+		/etc/init.d/dnsmasq restart
+	fi
 fi
 exit 0
 endef
