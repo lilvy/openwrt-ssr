@@ -9,6 +9,7 @@ local sock5_run=0
 local server_run=0
 local kcptun_run=0
 local tunnel_run=0
+local pdnsd_run=0
 local gfw_count=0
 local ad_count=0
 local ip_count=0
@@ -84,6 +85,10 @@ if luci.sys.call("pidof ssr-tunnel >/dev/null") == 0 then
 tunnel_run=1
 end	
 
+if luci.sys.call("pidof pdnsd >/dev/null") == 0 then
+pdnsd_run=1
+end
+
 local tabcount = 0;
 local tabname = {};
 local tabmenu = {};
@@ -146,6 +151,14 @@ end
 s=m:field(DummyValue,"tunnel_run",translate("DNS Tunnel")) 
 s.rawhtml  = true
 if tunnel_run == 1 then
+s.value =font_blue .. bold_on .. translate("Running") .. bold_off .. font_off
+else
+s.value = translate("Not Running")
+end
+
+s=m:field(DummyValue,"pdnsd_run",translate("pdnsd DNS Server")) 
+s.rawhtml  = true
+if pdnsd_run == 1 then
 s.value =font_blue .. bold_on .. translate("Running") .. bold_off .. font_off
 else
 s.value = translate("Not Running")
