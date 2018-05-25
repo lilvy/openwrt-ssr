@@ -20,13 +20,24 @@ if nixio.fs.access("/etc/pdnsd.conf") then
 pdnsd_flag=1		
 end
 
-m = Map("shadowsocksr", translate(""))
+local tabname = {"Client", "Server", "Status"};
+local tabmenu = {
+	luci.dispatcher.build_nodeurl("admin", "network", "shadowsocksr"),
+	luci.dispatcher.build_nodeurl("admin", "network", "shadowsocksr", "server"),
+	luci.dispatcher.build_nodeurl("admin", "network", "shadowsocksr", "status"),
+};
+local isact = {true, false, false};
+local tabcount = #tabname;
 
-s=m:section(TypedSection,"tabmenu",translate("")) 
-s.template = "shadowsocksr/tabmenu"
+m = Map("shadowsocksr", translate(""))
+m.description = "Configure SSR clients"
+m.istabform = true
+m.tabcount = tabcount
+m.tabname = tabname;
+m.tabmenu = tabmenu;
+m.isact = isact;
 
 local server_table = {}
-local arp_table = luci.sys.net.arptable() or {}
 local encrypt_methods = {
 	"table",
 	"rc4",
@@ -105,7 +116,6 @@ function o.cfgvalue(...)
 	return Value.cfgvalue(...) or translate("None")
 end
 
-
 o = sec:option(DummyValue, "server", translate("Server Address"))
 function o.cfgvalue(...)
 	return Value.cfgvalue(...) or "?"
@@ -125,7 +135,6 @@ o = sec:option(DummyValue, "protocol", translate("Protocol"))
 function o.cfgvalue(...)
 	return Value.cfgvalue(...) or "?"
 end
-
 
 o = sec:option(DummyValue, "obfs", translate("Obfs"))
 function o.cfgvalue(...)
@@ -185,8 +194,6 @@ o.default = 5300
 o.rmempty = false
 
 else
-
-
 
 o = s:option(ListValue, "gfw_enable", translate("Operating mode"))
 o:value("router", translate("IP Route Mode"))
@@ -258,6 +265,5 @@ o.rmempty = false
 
 o = s:taboption("lan_ac", DynamicList, "lan_ac_ips", translate("LAN Host List"))
 o.datatype = "ipaddr"
--- for _, v in ipairs(arp_table) do o:value(v["IP address"]) end
 
 return m

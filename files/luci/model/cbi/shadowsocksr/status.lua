@@ -89,32 +89,23 @@ if luci.sys.call("pidof pdnsd >/dev/null") == 0 then
 pdnsd_run=1
 end
 
-local tabcount = 0;
-local tabname = {};
-local tabmenu = {};
-local isact = {};
-
-tabcount = tabcount+1
-tabname[tabcount] = translate("Client")
-tabmenu[tabcount] = luci.dispatcher.build_nodeurl("admin", "network", "shadowsocksr")
-
-tabcount = tabcount+1
-tabname[tabcount] = translate("Server")
-tabmenu[tabcount] = luci.dispatcher.build_nodeurl("admin", "network", "shadowsocksr", "server")
-
-tabcount = tabcount+1
-tabname[tabcount] = translate("Status")
-tabmenu[tabcount] = luci.dispatcher.build_nodeurl("admin", "network", "shadowsocksr", "status")
-isact[tabcount] = true
+local tabname = {"Client", "Server", "Status"};
+local tabmenu = {
+	luci.dispatcher.build_nodeurl("admin", "network", "shadowsocksr"),
+	luci.dispatcher.build_nodeurl("admin", "network", "shadowsocksr", "server"),
+	luci.dispatcher.build_nodeurl("admin", "network", "shadowsocksr", "status"),
+};
+local isact = {false, false, true};
+local tabcount = #tabname;
 
 m = SimpleForm("Version", translate("Running Status"))
-m.reset = false
-m.submit = false
 m.istabform = true
 m.tabcount = tabcount
 m.tabname = tabname;
 m.tabmenu = tabmenu;
 m.isact = isact;
+m.reset = false
+m.submit = false
 
 s=m:field(DummyValue,"redir_run",translate("Global Client")) 
 s.rawhtml  = true
@@ -208,7 +199,6 @@ s.value =IPK_Version
 s=m:field(DummyValue,"kcp_version",translate("KcpTun Version")) 
 s.rawhtml  = true
 s.value =kcptun_version
-
 
 s=m:field(DummyValue,"project",translate("Project")) 
 s.rawhtml  = true

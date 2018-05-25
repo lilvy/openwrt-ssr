@@ -6,11 +6,22 @@ local shadowsocksr = "shadowsocksr"
 local uci = luci.model.uci.cursor()
 local ipkg = require("luci.model.ipkg")
 
+local tabname = {"Client", "Server", "Status"};
+local tabmenu = {
+	luci.dispatcher.build_nodeurl("admin", "network", "shadowsocksr"),
+	luci.dispatcher.build_nodeurl("admin", "network", "shadowsocksr", "server"),
+	luci.dispatcher.build_nodeurl("admin", "network", "shadowsocksr", "status"),
+};
+local isact = {false, true, false};
+local tabcount = #tabname;
 
 m = Map(shadowsocksr, translate(""))
-
-s=m:section(TypedSection,"tabmenu",translate(""))
-s.template = "shadowsocksr/tabmenu"
+m.description = "Configure SSR servers"
+m.istabform = true
+m.tabcount = tabcount
+m.tabname = tabname;
+m.tabmenu = tabmenu;
+m.isact = isact;
 
 local encrypt_methods = {
 	"table",
@@ -51,14 +62,9 @@ obfs = {
 }
 
 
-
-
-
 -- [[ Global Setting ]]--
 sec = m:section(TypedSection, "server_global", translate("Global Setting"))
 sec.anonymous = true
-
-
 
 o = sec:option(Flag, "enable_server", translate("Enable Server"))
 o.rmempty = false
@@ -94,7 +100,6 @@ function o.cfgvalue(...)
 	return Value.cfgvalue(...) or "?"
 end
 
-
 o = sec:option(DummyValue, "encrypt_method", translate("Encrypt Method"))
 function o.cfgvalue(...)
 	local v = Value.cfgvalue(...)
@@ -106,15 +111,9 @@ function o.cfgvalue(...)
 	return Value.cfgvalue(...) or "?"
 end
 
-
-
 o = sec:option(DummyValue, "obfs", translate("Obfs"))
 function o.cfgvalue(...)
 	return Value.cfgvalue(...) or "?"
 end
-
-
-
-
 
 return m
