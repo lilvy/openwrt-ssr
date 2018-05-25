@@ -5,31 +5,24 @@
 	function refresh_data(btn,dataname)
 	{
 		btn.disabled = true;
-		btn.value    = '<%:Refresh...%> ';
+		btn.value    = '<%:正在更新，请稍候...%> ';
 		murl=dataname;
 		XHR.get('<%=luci.dispatcher.build_url("admin", "network", "shadowsocksr","refresh")%>',
 			{ set:murl },
-			function(x,rv)
-			{
-			var s = document.getElementById(dataname+'-status');
-			if (s)
-			{
-				if (rv.ret=="0")
-				s.innerHTML ="<font color='green'>"+"<%:No new data!%> "+"</font>";
-				else if(rv.ret=="-1")
-				{
-					s.innerHTML ="<font color='red'>"+"<%:Refresh Error!%> "+"</font>";
-				}	
-				else
+			function(x,rv) {
+				var s = document.getElementById(dataname+'-status');
+				if (s) {
+					if (rv.ret=="0")
+					s.innerHTML ="<font color='green'>"+"<%:你已经是最新数据，无需更新！%> "+"</font>";
+					else if(rv.ret=="-1")
 					{
-				s.innerHTML ="<font color='green'>"+"<%:Refresh OK!%> "+"<%:Total Records:%>"+rv.ret+"</font>";
-			}
-
-
-			}
-
+						s.innerHTML ="<font color='red'>"+"<%:更新失败！%> "+"</font>";
+					} else {
+						s.innerHTML ="<font color='green'>"+"<%:更新成功！%> "+"<%:新的总纪录数：%>"+rv.ret+"</font>";
+					}
+				}
 				btn.disabled = false;
-				btn.value    = '<%:Refresh Data %>';
+				btn.value    = '<%:更新数据库 %>';
 			}
 		);
 
@@ -38,7 +31,7 @@
 //]]></script>
 
 
-<input type="button" class="cbi-button cbi-input-reload" value="<%:Refresh Data%> " onclick="return refresh_data(this,'<%=self.option%>')" />
+<input type="button" class="cbi-button cbi-input-reload" value="<%:更新数据库%> " onclick="return refresh_data(this,'<%=self.option%>')" />
 <span id="<%=self.option%>-status"><em><%=self.value%></em></span>
 
 <%+cbi/valuefooter%>

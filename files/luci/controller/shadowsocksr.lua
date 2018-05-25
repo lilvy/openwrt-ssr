@@ -11,7 +11,7 @@ function index()
     if nixio.fs.access("/usr/bin/ssr-redir") then
         entry({"admin", "network", "shadowsocksr"}, alias("admin", "network", "shadowsocksr", "client"), _("SSR"), 35).dependent = true
         
-        page = entry({"admin", "network", "shadowsocksr", "client"}, arcombine(cbi("shadowsocksr/client"), cbi("shadowsocksr/client-config")), _("SSR Client"), 10)
+        page = entry({"admin", "network", "shadowsocksr", "client"}, arcombine(cbi("shadowsocksr/client"), cbi("shadowsocksr/client-config")), _("客户端"), 10)
         page.hidden = true
         page.leaf = true
     elseif nixio.fs.access("/usr/bin/ssr-server") then
@@ -21,12 +21,12 @@ function index()
     end
     
     if nixio.fs.access("/usr/bin/ssr-server") then
-        page = entry({"admin", "network", "shadowsocksr", "server"}, arcombine(cbi("shadowsocksr/server"), cbi("shadowsocksr/server-config")), _("SSR Server"), 20)
+        page = entry({"admin", "network", "shadowsocksr", "server"}, arcombine(cbi("shadowsocksr/server"), cbi("shadowsocksr/server-config")), _("服务器"), 20)
         page.hidden = true
         page.leaf = true
     end
     
-    page = entry({"admin", "network", "shadowsocksr", "status"}, cbi("shadowsocksr/status"), _("Status"), 30)
+    page = entry({"admin", "network", "shadowsocksr", "status"}, cbi("shadowsocksr/status"), _("状态"), 30)
     page.hidden = true
     page.leaf = true
     

@@ -6,7 +6,7 @@ local shadowsocksr = "shadowsocksr"
 local uci = luci.model.uci.cursor()
 local ipkg = require("luci.model.ipkg")
 
-local tabname = {"Client", "Server", "Status"};
+local tabname = {translate("客户端"), translate("服务器"), translate("状态")};
 local tabmenu = {
     luci.dispatcher.build_nodeurl("admin", "network", "shadowsocksr"),
     luci.dispatcher.build_nodeurl("admin", "network", "shadowsocksr", "server"),
@@ -16,7 +16,7 @@ local isact = {false, true, false};
 local tabcount = #tabname;
 
 m = Map(shadowsocksr, translate(""))
-m.description = "Configure SSR servers"
+m.description = translate("服务器配置")
 m.istabform = true
 m.tabcount = tabcount
 m.tabname = tabname;
@@ -62,14 +62,14 @@ obfs = {
 }
 
 -- [[ Global Setting ]]--
-sec = m:section(TypedSection, "server_global", translate("Global Setting"))
+sec = m:section(TypedSection, "server_global", translate("全局设置"))
 sec.anonymous = true
 
-o = sec:option(Flag, "enable_server", translate("Enable Server"))
+o = sec:option(Flag, "enable_server", translate("启用"))
 o.rmempty = false
 
 -- [[ Server Setting ]]--
-sec = m:section(TypedSection, "server_config", translate("Server Setting"))
+sec = m:section(TypedSection, "server_config", translate("服务端配置"))
 sec.anonymous = true
 sec.addremove = true
 sec.sortable = true
@@ -83,34 +83,34 @@ function sec.create(...)
     end
 end
 
-o = sec:option(Flag, "enable", translate("Enable"))
+o = sec:option(Flag, "enable", translate("启用"))
 function o.cfgvalue(...)
     return Value.cfgvalue(...) or translate("0")
 end
 o.rmempty = false
 
-o = sec:option(DummyValue, "server", translate("Server Address"))
+o = sec:option(DummyValue, "server", translate("服务器地址"))
 function o.cfgvalue(...)
     return Value.cfgvalue(...) or "?"
 end
 
-o = sec:option(DummyValue, "server_port", translate("Server Port"))
+o = sec:option(DummyValue, "server_port", translate("服务器端口"))
 function o.cfgvalue(...)
     return Value.cfgvalue(...) or "?"
 end
 
-o = sec:option(DummyValue, "encrypt_method", translate("Encrypt Method"))
+o = sec:option(DummyValue, "encrypt_method", translate("加密方式"))
 function o.cfgvalue(...)
     local v = Value.cfgvalue(...)
     return v and v:upper() or "?"
 end
 
-o = sec:option(DummyValue, "protocol", translate("Protocol"))
+o = sec:option(DummyValue, "protocol", translate("协议"))
 function o.cfgvalue(...)
     return Value.cfgvalue(...) or "?"
 end
 
-o = sec:option(DummyValue, "obfs", translate("Obfs"))
+o = sec:option(DummyValue, "obfs", translate("混淆插件"))
 function o.cfgvalue(...)
     return Value.cfgvalue(...) or "?"
 end

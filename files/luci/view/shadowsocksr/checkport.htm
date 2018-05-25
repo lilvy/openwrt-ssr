@@ -8,29 +8,20 @@
 		btn.value    = '<%:Check...%>';
 		XHR.get('<%=luci.dispatcher.build_url("admin", "network", "shadowsocksr","checkport")%>',
 			null,
-			function(x,rv)
-			{
-			var s = document.getElementById('<%=self.option%>-status');
-			if (s)
-			{
-
-				s.innerHTML =rv.ret;
-
-
-
-			}
-
+			function(x,rv) {
+				var s = document.getElementById('<%=self.option%>-status');
+				if (s) {
+					s.innerHTML =rv.ret;
+				}
 				btn.disabled = false;
-				btn.value    = '<%:Check Server%>';
+				btn.value    = '<%:检查服务器%>';
 			}
 		);
 
 		return false;
 	}
 //]]></script>
-<input type="button" class="cbi-button cbi-button-apply" value="<%:Check Server%>" onclick="return check_port(this)" />
+<input type="button" class="cbi-button cbi-button-apply" value="<%:检查服务器%>" onclick="return check_port(this)" />
 <span id="<%=self.option%>-status"><em><%=self.value%></em></span>
-
-
 
 <%+cbi/valuefooter%>
