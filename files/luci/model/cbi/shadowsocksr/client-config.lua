@@ -96,6 +96,11 @@ o.datatype = "port"
 o.default = 1234
 o.rmempty = false
 
+o = s:option(Value, "weight", translate("Weight"))
+o.datatype = "uinteger"
+o.default = 10
+o.rmempty = false
+
 o = s:option(Value, "timeout", translate("Connection Timeout"))
 o.datatype = "uinteger"
 o.default = 60

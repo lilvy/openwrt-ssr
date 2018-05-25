@@ -9,7 +9,10 @@ local sock5_run = 0
 local server_run = 0
 local kcptun_run = 0
 local tunnel_run = 0
+local pdnsd_flag = 0
 local pdnsd_run = 0
+local haproxy_flag = 0
+local haproxy_run = 0
 local gfw_count = 0
 local ad_count = 0
 local ip_count = 0
@@ -84,8 +87,18 @@ if luci.sys.call("pidof ssr-tunnel >/dev/null") == 0 then
     tunnel_run = 1
 end
 
-if luci.sys.call("pidof pdnsd >/dev/null") == 0 then
-    pdnsd_run = 1
+if nixio.fs.access("/etc/pdnsd.conf") then
+    pdnsd_flag = 1
+    if luci.sys.call("pidof pdnsd >/dev/null") == 0 then
+        pdnsd_run = 1
+    end
+end
+
+if nixio.fs.access("/etc/haproxy.cfg") then
+    haproxy_flag = 1
+    if luci.sys.call("pidof haproxy >/dev/null") == 0 then
+        haproxy_run = 1
+    end
 end
 
 local tabname = {"Client", "Server", "Status"};
@@ -146,12 +159,27 @@ else
     s.value = translate("Not Running")
 end
 
-s = m:field(DummyValue, "pdnsd_run", translate("pdnsd DNS Server"))
-s.rawhtml = true
-if pdnsd_run == 1 then
-    s.value = font_blue .. bold_on .. translate("Running") .. bold_off .. font_off
-else
-    s.value = translate("Not Running")
+if pdnsd_flag == 1 then
+    s = m:field(DummyValue, "pdnsd_run", translate("pdnsd Server"))
+    s.rawhtml = true
+    if pdnsd_run == 1 then
+        s.value = font_blue .. bold_on .. translate("Running") .. bold_off .. font_off
+    else
+        s.value = translate("Not Running")
+    end
+end
+
+if haproxy_flag == 1 then
+    s = m:field(DummyValue, "haproxy_run", translate("haproxy Server"))
+    s.rawhtml = true
+    if haproxy_run == 1 then
+        local uci = require "luci.model.uci".cursor()
+        local stats_url = "http://" .. uci:get("network", "lan", "ipaddr") .. ":1111/stats"
+        local haproxy_stats = bold_on .. [[<a target="_blank" href="]] .. stats_url .. [[">]] .. translate("View Stats") .. [[</a>]] .. bold_off
+        s.value = font_blue .. bold_on .. translate("Running") .. bold_off .. font_off .. " (" .. haproxy_stats .. ")"
+    else
+        s.value = translate("Not Running")
+    end
 end
 
 s = m:field(DummyValue, "kcptun_run", translate("KcpTun"))

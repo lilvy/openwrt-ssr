@@ -11,6 +11,7 @@ local sys = require "luci.sys"
 local gfwmode = 0
 
 local pdnsd_flag = 0
+local haproxy_flag = 0
 
 if nixio.fs.access("/etc/dnsmasq.ssr/gfw_list.conf") then
     gfwmode = 1
@@ -18,6 +19,9 @@ end
 
 if nixio.fs.access("/etc/pdnsd.conf") then
     pdnsd_flag = 1
+end
+if nixio.fs.access("/etc/haproxy.cfg") then
+    haproxy_flag = 1
 end
 
 local tabname = {"Client", "Server", "Status"};
@@ -38,6 +42,7 @@ m.tabmenu = tabmenu;
 m.isact = isact;
 
 local server_table = {}
+local server_count = 0
 local encrypt_methods = {
     "table",
     "rc4",
@@ -88,6 +93,7 @@ uci:foreach(shadowsocksr, "servers", function(s)
     elseif s.server and s.server_port then
         server_table[s[".name"]] = "%s:%s" % {s.server, s.server_port}
     end
+    server_count = server_count + 1
 end)
 
 -- [[ Servers Setting ]]--
@@ -151,8 +157,13 @@ end
 s = m:section(TypedSection, "global", translate("Global Setting"))
 s.anonymous = true
 
+o = s:option(Flag, "enable", translate("Enable"))
+o.rmempty = false
+
 o = s:option(ListValue, "global_server", translate("Global Server"))
-o:value("nil", translate("Disable"))
+if haproxy_flag == 1 and server_count > 1 then
+    o:value("__haproxy__", translate("haproxy"))
+end
 for k, v in pairs(server_table) do o:value(k, v) end
 o.default = "nil"
 o.rmempty = false
