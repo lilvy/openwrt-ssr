@@ -229,7 +229,7 @@ s.value = kcptun_version
 
 s = m:field(DummyValue, "project", translate("项目地址"))
 s.rawhtml = true
-s.value = bold_on .. [[<a href="]] .. "https://github.com/ywb94/openwrt-ssr" .. [[" >]]
-.. "https://github.com/ywb94/openwrt-ssr" .. [[</a>]] .. bold_off
+s.value = bold_on .. [[<a href="]] .. "https://github.com/tsl0922/openwrt-ssr" .. [[" >]]
+.. "https://github.com/tsl0922/openwrt-ssr" .. [[</a>]] .. bold_off
 
 return m

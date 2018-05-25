@@ -113,7 +113,7 @@ o.rmempty = false
 
 o = s:option(ListValue, "udp_relay_server", translate("UDP 中继服务器"))
 o:value("", translate("停用"))
-o:value("same", translate("与全局服务器相同"))
+o:value("same", translate("同上面服务器"))
 for k, v in pairs(server_table) do o:value(k, v) end
 
 o = s:option(Flag, "monitor_enable", translate("启用进程监控"))
@@ -149,7 +149,7 @@ else
     o.rmempty = false
     
     if pdnsd_flag == 1 then
-        o = s:option(ListValue, "pdnsd_enable", translate("DNS 解析方式"))
+        o = s:option(ListValue, "pdnsd_enable", translate("DNS 解析方式"), translate("如果固件缺少 TPROXY 内核模块，GFW 模式下请使用 pdnsd"))
         o:value("0", translate("使用 DNS 隧道"))
         o:value("1", translate("使用 pdnsd"))
         o.rmempty = false
@@ -268,6 +268,11 @@ end
 o = sec:option(DummyValue, "switch_enable", translate("自动切换"))
 function o.cfgvalue(...)
     return Value.cfgvalue(...) or "0"
+end
+
+o = sec:option(DummyValue, "weight", translate("权重"))
+function o.cfgvalue(...)
+    return Value.cfgvalue(...) or "10"
 end
 
 return m
